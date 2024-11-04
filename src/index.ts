@@ -33,15 +33,15 @@ async function CliLogic() {
     options = validateConfig(options);
     const driver = createDriver(options.connectionOptions.databaseType);
     console.log(
-        `[${new Date().toLocaleTimeString()}] Starting creation of model classes.`
+        `[${new Date().toLocaleTimeString()}] Starting creation of model classes.`,
     );
     await createModelFromDatabase(
         driver,
         options.connectionOptions,
-        options.generationOptions
+        options.generationOptions,
     );
     console.info(
-        `[${new Date().toLocaleTimeString()}] Typeorm model classes created.`
+        `[${new Date().toLocaleTimeString()}] Typeorm model classes created.`,
     );
 }
 function validateConfig(options: options): options {
@@ -51,7 +51,7 @@ function validateConfig(options: options): options {
     ) {
         TomgUtils.LogError(
             "Typeorm doesn't support RelationId fields for lazy relations.",
-            false
+            false,
         );
         options.generationOptions.relationIds = false;
     }
@@ -75,8 +75,8 @@ function readTOMLConfig(options: options): {
     console.log(
         `[${new Date().toLocaleTimeString()}] Using configuration file. [${path.resolve(
             process.cwd(),
-            ".tomg-config"
-        )}]`
+            ".tomg-config",
+        )}]`,
     );
     const retVal = fs.readJsonSync(path.resolve(process.cwd(), ".tomg-config"));
     const [loadedGenerationOptions, loadedConnectionOptions] = retVal;
@@ -87,7 +87,7 @@ function readTOMLConfig(options: options): {
             if (
                 Object.prototype.hasOwnProperty.call(
                     options.connectionOptions,
-                    key
+                    key,
                 )
             ) {
                 options.connectionOptions[key] = loadedConnectionOptions[key];
@@ -102,7 +102,7 @@ function readTOMLConfig(options: options): {
             if (
                 Object.prototype.hasOwnProperty.call(
                     options.generationOptions,
-                    key
+                    key,
                 )
             ) {
                 options.generationOptions[key] = loadedGenerationOptions[key];
@@ -129,7 +129,7 @@ function readTOMLConfig(options: options): {
 }
 function checkYargsParameters(options: options): options {
     const { argv } = Yargs.usage(
-        "Usage: typeorm-model-generator -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\nYou can also run program without specifying any parameters."
+        "Usage: typeorm-model-generator -h <host> -d <database> -p [port] -u <user> -x [password] -e [engine]\nYou can also run program without specifying any parameters.",
     ).options({
         h: {
             alias: "host",
@@ -299,6 +299,8 @@ function checkYargsParameters(options: options): options {
             describe: "Generate index file",
         },
     });
+
+    console.log(argv);
 
     options.connectionOptions.databaseNames = argv.d.split(",");
     options.connectionOptions.databaseType = argv.e;
@@ -663,7 +665,7 @@ async function useInquirer(options: options): Promise<options> {
             customizations.includes("constructor");
         options.generationOptions.indexFile = customizations.includes("index");
         options.generationOptions.exportType = customizations.includes(
-            "defaultExport"
+            "defaultExport",
         )
             ? "default"
             : "named";
@@ -756,17 +758,17 @@ async function useInquirer(options: options): Promise<options> {
         await fs.writeJson(
             path.resolve(process.cwd(), ".tomg-config"),
             [options.generationOptions, options.connectionOptions],
-            { spaces: 2 }
+            { spaces: 2 },
         );
         console.log(`[${new Date().toLocaleTimeString()}] Config file saved.`);
         console.warn(
-            `\x1b[33m[${new Date().toLocaleTimeString()}] WARNING: Password was saved as plain text.\x1b[0m`
+            `\x1b[33m[${new Date().toLocaleTimeString()}] WARNING: Password was saved as plain text.\x1b[0m`,
         );
     } else if (saveConfig === "Yes, only model customization options") {
         await fs.writeJson(
             path.resolve(process.cwd(), ".tomg-config"),
             [options.generationOptions],
-            { spaces: 2 }
+            { spaces: 2 },
         );
         console.log(`[${new Date().toLocaleTimeString()}] Config file saved.`);
     }
